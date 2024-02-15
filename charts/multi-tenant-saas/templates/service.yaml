@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: multi-tenant-saas-api
+  labels:
+    app: multi-tenant-saas
+spec:
+  selector:
+    app: multi-tenant-saas
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

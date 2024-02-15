@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multi-tenant-saas-api
+  labels:
+    app: multi-tenant-saas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: multi-tenant-saas
+  template:
+    metadata:
+      labels:
+        app: multi-tenant-saas
+    spec:
+      containers:
+        - name: api
+          image: multi-tenant-saas-api:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://user:password@postgres:5432/saas_platform"
+            - name: REDIS_URL
+              value: "redis://redis:6379/0"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: saas-secrets
+                  key: secret-key
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: saas-secrets
+                  key: stripe-secret-key
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
